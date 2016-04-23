@@ -10,61 +10,61 @@
     "resources": {
         "media": [
             {
-                "file": "images/8",
-                "name": "RES_8",
-                "targetPlatforms": null,
-                "type": "bitmap"
-            },
-            {
-                "file": "images/2",
-                "name": "RES_2",
-                "targetPlatforms": null,
-                "type": "bitmap"
-            },
-            {
-                "file": "images/1",
-                "name": "RES_1",
-                "targetPlatforms": null,
-                "type": "bitmap"
-            },
-            {
-                "file": "images/9",
+                "file": "images/9.png",
                 "name": "RES_9",
                 "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
-                "file": "images/7",
+                "file": "images/8.png",
+                "name": "RES_8",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/7.png",
                 "name": "RES_7",
                 "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
-                "file": "images/6",
+                "file": "images/6.png",
                 "name": "RES_6",
                 "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
-                "file": "images/5",
+                "file": "images/5.png",
                 "name": "RES_5",
                 "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
-                "file": "images/4",
+                "file": "images/4.png",
                 "name": "RES_4",
                 "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
-                "file": "images/3",
+                "file": "images/3.png",
                 "name": "RES_3",
                 "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
-                "file": "images/0",
+                "file": "images/2.png",
+                "name": "RES_2",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/1.png",
+                "name": "RES_1",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/0.png",
                 "name": "RES_0",
                 "targetPlatforms": null,
                 "type": "bitmap"
