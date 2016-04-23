@@ -1,0 +1,86 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "nickmsoccer@gmail.com",
+    "enableMultiJS": true,
+    "longName": "Nixie Watch",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/8",
+                "name": "RES_8",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/2",
+                "name": "RES_2",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/1",
+                "name": "RES_1",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/9",
+                "name": "RES_9",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/7",
+                "name": "RES_7",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/6",
+                "name": "RES_6",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/5",
+                "name": "RES_5",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/4",
+                "name": "RES_4",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/3",
+                "name": "RES_3",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
+                "file": "images/0",
+                "name": "RES_0",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Nixie Watch",
+    "targetPlatforms": [
+        "aplite",
+        "basalt",
+        "chalk"
+    ],
+    "uuid": "1892767a-fe73-4df9-b50a-5d7604597799",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
