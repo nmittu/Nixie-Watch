@@ -1,5 +1,6 @@
 {
     "appKeys": {
+        "CENTER": 1,
         "VIBE_TIME": 0
     },
     "capabilities": [
