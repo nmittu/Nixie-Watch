@@ -117,8 +117,6 @@ static void update_proc(Layer *layer, GContext *ctx) {
 	
 	HealthValue steps = health_service_sum_today(HealthMetricStepCount);
 	
-	steps = 99999;
-	
 	char steps_string[10];
 	if(steps >= 1000){
 		snprintf(steps_string, sizeof(steps_string), "%d.%dK", (int)steps/1000, (int)((float)(steps-(steps/1000)*1000)/100));
