@@ -17,9 +17,11 @@
 #define CONNECTED_CIR_RADIUS 5
 #define BATT_PADING 3
 #define HEALTH_PADING 3
+#define NUM_SAMPLES 25
 
 #define VIBE_TIME 0
 #define CENTER 1
+#define SHOW_DATE 2
 
 #define KEY_MINUTES 0
 
@@ -30,9 +32,60 @@ BitmapLayer *hour1; BitmapLayer *hour2;
 BitmapLayer *min1; BitmapLayer *min2;
 int mins;
 bool center;
+bool show_date;
 
 void init();
 void deinit();
+GBitmap* getBitmapFromChar(char num);
+static void tick_handler(struct tm *tick_time, TimeUnits units_changed);
+void set_time();
+
+void back_to_time_mode(void *data){
+	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+	set_time();
+}
+
+void set_date(){
+	time_t temp = time(NULL);
+	tm *time = localtime(&temp);
+	
+	static char date[8];
+	strftime(date, sizeof(date), "%m%d", time);
+	
+	bitmap_layer_set_bitmap(hour1, getBitmapFromChar(date[0]));
+	bitmap_layer_set_bitmap(hour2, getBitmapFromChar(date[1]));
+	bitmap_layer_set_bitmap(min1, getBitmapFromChar(date[2]));
+	bitmap_layer_set_bitmap(min2, getBitmapFromChar(date[3]));
+}
+
+static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
+  HealthMinuteData *healthData = malloc(sizeof(HealthMinuteData));
+	time_t one_min_ago = time(NULL) - SECONDS_PER_MINUTE;
+	time_t cur = time(NULL);
+	if(health_service_get_minute_history(healthData, 1, &one_min_ago, &cur) == 1){
+		switch(healthData->light){
+		case AmbientLightLevelUnknown:
+			APP_LOG(APP_LOG_LEVEL_INFO, "UNKNOWN");
+			break;
+		case AmbientLightLevelVeryDark:
+			APP_LOG(APP_LOG_LEVEL_INFO, "VERYDARK");
+			break;
+		case AmbientLightLevelDark:
+			APP_LOG(APP_LOG_LEVEL_INFO, "DARK");
+			break;
+		case AmbientLightLevelLight:
+			APP_LOG(APP_LOG_LEVEL_INFO, "LIGHT");
+			break;
+		case AmbientLightLevelVeryLight:
+			APP_LOG(APP_LOG_LEVEL_INFO, "VERYLIGHT");
+			break;
+		}
+	}
+	
+	set_date();
+	tick_timer_service_unsubscribe();
+	app_timer_register(2000, back_to_time_mode, NULL);
+}
 
 static void app_connection_handler(bool connected) {
 	layer_mark_dirty(window_get_root_layer(window));
@@ -62,6 +115,15 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 		deinit();
 		init();
 	}
+	
+	Tuple *date = dict_find(iterator, SHOW_DATE);
+	if(date){
+		accel_tap_service_unsubscribe();
+		if(date->value->int8){
+			accel_tap_service_subscribe(accel_tap_handler);
+		}
+	}
+	
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context){
@@ -92,7 +154,8 @@ static void update_proc(Layer *layer, GContext *ctx) {
 	char batteryT[5];
 	snprintf(batteryT, sizeof(batteryT), "%d%%", state.charge_percent);
 	
-	GSize size1 = graphics_text_layout_get_content_size(batteryT, fonts_get_system_font(FONT_KEY_GOTHIC_24), bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight);
+	GSize size1 = graphics_text_layout_get_content_size(batteryT, fonts_get_system_font(FONT_KEY_GOTHIC_24),
+																											bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight);
 	
 	GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_18);
 	
@@ -102,7 +165,9 @@ static void update_proc(Layer *layer, GContext *ctx) {
 		graphics_context_set_fill_color(ctx, GColorWhite);
 	#endif
 	
-	graphics_draw_text(ctx, batteryT, font, GRect(bounds.size.w - BATT_PADING - size1.w, bounds.size.h/2-size1.h/2, size1.w, size1.h), GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+	graphics_draw_text(ctx, batteryT, font,
+										 GRect(bounds.size.w - BATT_PADING - size1.w, bounds.size.h/2-size1.h/2, size1.w, size1.h),
+										 GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
 	
 	#ifdef PBL_COLOR
 		graphics_context_set_fill_color(ctx, connection_service_peek_pebble_app_connection() ? GColorGreen : GColorRed);
@@ -111,7 +176,9 @@ static void update_proc(Layer *layer, GContext *ctx) {
 	#endif
 	
 	graphics_fill_circle(ctx,
-											 GPoint(bounds.size.w - CONNECTED_CIR_PADING - CONNECTED_CIR_RADIUS * PBL_IF_ROUND_ELSE(3, 1), PBL_IF_RECT_ELSE(CONNECTED_CIR_PADING + CONNECTED_CIR_RADIUS, bounds.size.h/2-size1.h/2-CONNECTED_CIR_RADIUS-CONNECTED_CIR_PADING)),
+											 GPoint(bounds.size.w - CONNECTED_CIR_PADING - CONNECTED_CIR_RADIUS * PBL_IF_ROUND_ELSE(3, 1),
+															PBL_IF_RECT_ELSE(CONNECTED_CIR_PADING + CONNECTED_CIR_RADIUS,
+																							 bounds.size.h/2-size1.h/2-CONNECTED_CIR_RADIUS-CONNECTED_CIR_PADING)),
 											 CONNECTED_CIR_RADIUS);
 	
 	
@@ -125,10 +192,15 @@ static void update_proc(Layer *layer, GContext *ctx) {
 	}
 	
 	
-	GSize size2 = graphics_text_layout_get_content_size(steps_string, fonts_get_system_font(FONT_KEY_GOTHIC_24), bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight);
+	GSize size2 = graphics_text_layout_get_content_size(steps_string, fonts_get_system_font(FONT_KEY_GOTHIC_24),
+																											bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentRight);
 	
 	graphics_context_set_text_color(ctx, GColorGreen);
-	graphics_draw_text(ctx, steps_string, font, GRect(bounds.size.w - HEALTH_PADING * PBL_IF_ROUND_ELSE(3, 1) - size2.w, PBL_IF_RECT_ELSE(bounds.size.h-size2.h-HEALTH_PADING, bounds.size.h/2+HEALTH_PADING), size2.w, size2.h), GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
+	graphics_draw_text(ctx, steps_string, font,
+										 GRect(bounds.size.w - HEALTH_PADING * PBL_IF_ROUND_ELSE(3, 1) - size2.w,
+													 PBL_IF_RECT_ELSE(bounds.size.h-size2.h-HEALTH_PADING, bounds.size.h/2+HEALTH_PADING),
+													 size2.w, size2.h),
+										 GTextOverflowModeTrailingEllipsis, GTextAlignmentRight, NULL);
 	
 	
 }
@@ -258,6 +330,11 @@ void init(){
 		center = persist_read_bool(CENTER);
 	}
 	
+	show_date = true;
+	if(persist_exists(SHOW_DATE)){
+		show_date = persist_read_bool(SHOW_DATE);
+	}
+	
 	window = window_create();
 	
 	window_set_window_handlers(window, (WindowHandlers) {
@@ -280,6 +357,10 @@ void init(){
   	.pebble_app_connection_handler = app_connection_handler,
   	.pebblekit_connection_handler = kit_connection_handler
 	});
+	
+	if(show_date){
+		accel_tap_service_subscribe(accel_tap_handler);
+	}
 }
 
 void deinit(){

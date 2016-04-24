@@ -1,10 +1,12 @@
 {
     "appKeys": {
         "CENTER": 1,
+        "SHOW_DATE": 2,
         "VIBE_TIME": 0
     },
     "capabilities": [
-        "configurable"
+        "configurable",
+        "health"
     ],
     "companyName": "nickmsoccer@gmail.com",
     "enableMultiJS": true,
@@ -82,7 +84,7 @@
         "chalk"
     ],
     "uuid": "1892767a-fe73-4df9-b50a-5d7604597799",
-    "versionLabel": "2.0",
+    "versionLabel": "2.1",
     "watchapp": {
         "watchface": true
     }

@@ -20,7 +20,8 @@ Pebble.addEventListener('webviewclosed', function(e) {
 	
 	var dictionary ={
 		VIBE_TIME: config_data.minutes,
-		CENTER: config_data.center
+		CENTER: config_data.center,
+		SHOW_DATE: config_data.date
 	};
 	
 	Pebble.sendAppMessage(dictionary,
