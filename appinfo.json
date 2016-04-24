@@ -1,7 +1,9 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "VIBE_TIME": 0
+    },
     "capabilities": [
-        ""
+        "configurable"
     ],
     "companyName": "nickmsoccer@gmail.com",
     "enableMultiJS": true,

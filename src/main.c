@@ -12,11 +12,37 @@
 #define IMAGE_W 42
 #define IMAGE_H 76
 
+#define VIBE_TIME 0
+
+#define KEY_MINUTES 0
+
 Window *window;
 GBitmap *B0; GBitmap *B1; GBitmap *B2; GBitmap *B3; GBitmap *B4;
 GBitmap *B5; GBitmap *B6; GBitmap *B7; GBitmap *B8; GBitmap *B9;
 BitmapLayer *hour1; BitmapLayer *hour2;
 BitmapLayer *min1; BitmapLayer *min2;
+int mins;
+
+static void inbox_received_callback(DictionaryIterator *iterator, void *context){
+	Tuple *minutes = dict_find(iterator, VIBE_TIME);
+	if(minutes){
+		mins = minutes->value->uint8;
+		persist_write_int(KEY_MINUTES, mins);
+	}
+}
+
+static void inbox_dropped_callback(AppMessageResult reason, void *context){
+	APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!!");
+}
+
+static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context){
+	APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!!");
+}
+
+static void outbox_sent_callback(DictionaryIterator *iterator, void *context){
+	APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send success!!");
+}
+
 
 GBitmap* getBitmapFromChar(char num){
 	switch(num){
@@ -62,6 +88,11 @@ void set_time(){
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed){
 	set_time();
+	
+	if(mins != 0 && (tick_time->tm_min +(tick_time->tm_hour*60))%mins == 0){
+		vibes_double_pulse();
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "fmt");
+	}
 }
 
 void main_window_load(){
@@ -104,6 +135,11 @@ void main_window_unload(){
 }
 
 void init(){
+	mins = 0;
+	if(persist_exists(KEY_MINUTES)){
+		mins = persist_read_int(KEY_MINUTES);
+	}
+	
 	window = window_create();
 	
 	window_set_window_handlers(window, (WindowHandlers) {
@@ -114,6 +150,13 @@ void init(){
 	window_stack_push(window, true);
 	
 	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+	
+	app_message_register_inbox_received(inbox_received_callback);
+	app_message_register_inbox_dropped(inbox_dropped_callback);
+	app_message_register_outbox_failed(outbox_failed_callback);
+	app_message_register_outbox_sent(outbox_sent_callback);
+	
+	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 void deinit(){
