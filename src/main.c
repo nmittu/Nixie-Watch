@@ -59,28 +59,36 @@ void set_date(){
 }
 
 static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
-  HealthMinuteData *healthData = malloc(sizeof(HealthMinuteData));
-	time_t one_min_ago = time(NULL) - SECONDS_PER_MINUTE;
-	time_t cur = time(NULL);
-	if(health_service_get_minute_history(healthData, 1, &one_min_ago, &cur) == 1){
-		switch(healthData->light){
-		case AmbientLightLevelUnknown:
-			APP_LOG(APP_LOG_LEVEL_INFO, "UNKNOWN");
-			break;
-		case AmbientLightLevelVeryDark:
-			APP_LOG(APP_LOG_LEVEL_INFO, "VERYDARK");
-			break;
-		case AmbientLightLevelDark:
-			APP_LOG(APP_LOG_LEVEL_INFO, "DARK");
-			break;
-		case AmbientLightLevelLight:
-			APP_LOG(APP_LOG_LEVEL_INFO, "LIGHT");
-			break;
-		case AmbientLightLevelVeryLight:
-			APP_LOG(APP_LOG_LEVEL_INFO, "VERYLIGHT");
-			break;
-		}
-	}
+  //HealthMinuteData *healthData = malloc(sizeof(HealthMinuteData));
+	//time_t one_min_ago = time(NULL) - SECONDS_PER_MINUTE*100;
+	//time_t cur = time(NULL);
+	
+	//int records = health_service_get_minute_history(healthData, 1, &one_min_ago, &cur);
+	
+	//APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", records);
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "AY");
+	
+	//if(records == 1){
+	//	switch(healthData->light){
+	//	case AmbientLightLevelUnknown:
+	//		APP_LOG(APP_LOG_LEVEL_INFO, "UNKNOWN");
+	//		break;
+	//	case AmbientLightLevelVeryDark:
+	//		APP_LOG(APP_LOG_LEVEL_INFO, "VERYDARK");
+	//		break;
+	//	case AmbientLightLevelDark:
+	//		APP_LOG(APP_LOG_LEVEL_INFO, "DARK");
+	//		break;
+	//	case AmbientLightLevelLight:
+	//		APP_LOG(APP_LOG_LEVEL_INFO, "LIGHT");
+	//		break;
+	//	case AmbientLightLevelVeryLight:
+	//		APP_LOG(APP_LOG_LEVEL_INFO, "VERYLIGHT");
+	//		break;
+	//	}
+	//}
+	
+	//free(healthData);
 	
 	set_date();
 	tick_timer_service_unsubscribe();
